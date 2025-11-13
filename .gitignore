@@ -1,0 +1,64 @@
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+out/
+
+# IntelliJ: arquivos específicos
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/inspectionProfiles
+*.iws
+
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+
+### Arquivos de ambiente / Senhas ###
+.env
+.env.*
+*.env
+*.env.*
+*.key
+*.pem
+*.cert
+*.secrets
+
+### Logs ###
+*.log
+
+### Builds / Compilados ###
+/target/
+/build/
+/bin/
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+
+### Backup / Temp ###
+*.swp
+*~
+*.tmp
+
+### VS Code (se usar) ###
+.vscode/
