@@ -22,8 +22,10 @@ public class Main {
         System.out.print("Check-out date (DD/MM/YYYY)");
         Date checkout = sdf.parse(sc.next());
 
-        /*This logic is very poor considering that the validation of the criteria
-        for the reservation is being done in the main program (Main). */
+        /*This solution is less bad than the previous one, since the reservation validation logic is now delegated
+        to the Reservation class itself rather than the main system. However, this solution still has a small validation
+        issue during the object's initialization, because there is a validation that should be handled by the constructor —
+        but since constructors cannot return a String, this solution will remain as it is for now. */
 
         if (!checkout.after(checkin)) {
             System.out.println("Erro in reservation: Check-out date must be after check-in date.");
@@ -38,17 +40,11 @@ public class Main {
             System.out.print("Check-out date (DD/MM/YYYY)");
             checkout = sdf.parse(sc.next());
 
-            reservation.updateDates(checkin, checkout);
-            System.out.println("Reservation: " + reservation);
-
-            Date now = new Date();
-            if (checkin.before(now) || checkout.before(now)) {
-                System.out.println("Error in reservation: Reservation dates for update must be future date.");
-            } else if (!checkout.after(checkin)) {
-                System.out.println("Erro in reservation: Check-out date must be after check-in date.");
+            String error = reservation.updateDates(checkin, checkout);
+            if (error != null) {
+                System.out.println("Error in reservation: " + error);
             } else {
-                reservation.updateDates(checkin, checkout);
-                System.out.println("Reseervation: " + reservation);
+                System.out.println("Reservation: " + reservation);
             }
         }
         sc.close();

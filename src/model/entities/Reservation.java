@@ -42,14 +42,23 @@ public class Reservation {
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
-    public void updateDates(Date chekcin, Date checkout) {
+    public String updateDates(Date chekcin, Date checkout) {
+        Date now = new Date();
+        if (checkin.before(now) || checkout.before(now)) {
+            return "Reservation dates for update must be future date.";
+        }
+        if (!checkout.after(checkin)) {
+            return "Check-out date must be after check-in date.";
+        }
+
         this.checkin = chekcin;
         this.checkout = checkout;
+        return null;
     }
 
     @Override
     public String toString() {
-        return "Reservation: Room "
+        return "Room "
                 + roomNumber
                 + ", check-in: "
                 + sdf.format(checkin)
