@@ -2,27 +2,31 @@ package model.entities;
 
 import model.exceptions.DomainException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class Reservation {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 
     private Integer roomNumber;
-    private Date checkin;
-    private Date checkout;
+    private LocalDate checkin;
+    private LocalDate checkout;
 
     public Reservation() {
     }
 
-    public Reservation(Integer roomNumber, Date chekcin, Date checkout) throws DomainException {
-        if (!checkout.after(chekcin)) {
+    public Reservation(Integer roomNumber, LocalDate checkin, LocalDate checkout) throws DomainException {
+        LocalDate now = LocalDate.now();
+        if (checkin.isBefore(now) || checkout.isBefore(now))
+            throw new DomainException("You cannot make a reservation for a past date.");
+        if (!checkout.isAfter(checkin)) {
             throw new DomainException("Check-out date must be after check-in date");
         }
         this.roomNumber = roomNumber;
-        this.checkin = chekcin;
+        this.checkin = checkin;
         this.checkout = checkout;
     }
 
@@ -30,32 +34,27 @@ public class Reservation {
         return this.roomNumber;
     }
 
-    public void setRoomNumber(Integer roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
-    public Date getCheckin() {
+    public LocalDate getCheckin() {
         return this.checkin;
     }
 
-    public Date getCheckout() {
+    public LocalDate getCheckout() {
         return this.checkout;
     }
 
     public long duration() {
-        long diff = getCheckout().getTime() - getCheckin().getTime();
-        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        return ChronoUnit.DAYS.between(getCheckin(), getCheckout());
     }
 
-    public void updateDates(Date chekcin, Date checkout) throws DomainException {
-        Date now = new Date();
-        if (checkin.before(now) || checkout.before(now)) {
-            throw new DomainException("Reservation dates for update must be future date.");
+    public void updateDates(LocalDate checkin, LocalDate checkout) throws DomainException {
+        LocalDate now = LocalDate.now();
+        if (checkin.isBefore(now) || checkout.isBefore(now)) {
+            throw new DomainException("Reservation dates must be future dates.");
         }
-        if (!checkout.after(checkin)) {
+        if (!checkout.isAfter(checkin)) {
             throw new DomainException( "Check-out date must be after check-in date.");
         }
-        this.checkin = chekcin;
+        this.checkin = checkin;
         this.checkout = checkout;
     }
 
@@ -64,9 +63,9 @@ public class Reservation {
         return "Room "
                 + roomNumber
                 + ", check-in: "
-                + sdf.format(checkin)
+                + dtf.format(checkin)
                 + ", check-out: "
-                + sdf.format(checkout)
+                + dtf.format(checkout)
                 + ", "
                 + duration()
                 + " nights.";

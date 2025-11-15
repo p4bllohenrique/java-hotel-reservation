@@ -3,41 +3,57 @@ package application;
 import model.entities.Reservation;
 import model.exceptions.DomainException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
 
+    private static LocalDate readDate(Scanner sc, DateTimeFormatter dtf, String message) {
+        while (true) {
+            System.out.print(message);
+            String text = sc.next();
+
+            try {
+                return LocalDate.parse(text, dtf);
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please enter a date in DD/MM/YYYY format.");
+            }
+        }
+    }
+
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         try {
-            System.out.print("Room number: ");
-            int roomNumber = sc.nextInt();
+            int roomNumber;
+            while (true) {
+                System.out.print("Room number: ");
+                if (sc.hasNextInt()) {
+                    roomNumber = sc.nextInt();
+                    break;
+                } else {
+                    System.out.println("Invalid number. Please enter an integer.");
+                    sc.next();
+                }
+            }
+
             sc.nextLine();
-            System.out.print("Check-in date (DD/MM/YYYY): ");
-            Date checkin = sdf.parse(sc.next());
-            System.out.print("Check-out date (DD/MM/YYYY): ");
-            Date checkout = sdf.parse(sc.next());
+            LocalDate checkin = readDate(sc, dtf, "Check-in date (DD/MM/YYYY): ");
+            LocalDate checkout = readDate(sc, dtf, "Check-out date (DD/MM/YYYY): ");
 
             Reservation reservation = new Reservation(roomNumber, checkin, checkout);
             System.out.println("Reservation: " + reservation);
 
             System.out.println();
-            System.out.println("Enter date to update the reservation:");
-            System.out.print("Check-in date (DD/MM/YYYY): ");
-            checkin = sdf.parse(sc.next());
-            System.out.print("Check-out date (DD/MM/YYYY): ");
-            checkout = sdf.parse(sc.next());
+            System.out.println("Enter new dates to update the reservation: ");
+            checkin = readDate(sc, dtf, "Check-in date (DD/MM/YYYY): ");
+            checkout = readDate(sc, dtf, "Check-out date (DD/MM/YYYY): ");
 
             reservation.updateDates(checkin, checkout);
             System.out.println("Reservation: " + reservation);
-        } catch (ParseException e) {
-            System.out.println("Invalid date format");
         } catch (DomainException e) {
             System.out.println("Error in reservation: " + e.getMessage());
         } catch (RuntimeException e) {
